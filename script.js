@@ -298,13 +298,13 @@ document.addEventListener('DOMContentLoaded', () => {
       companion_count: parseInt(companionCount) || 0,
     };
 
-    // Gáº¯n guest_id vÃ  type náº¿u cÃ³
+    // 
     if (wData.guestId) {
       payload.guest_id = wData.guestId;
     }
     payload.type = wData.type || 1;
 
-    // Gá»­i request Ä‘áº¿n Laravel API
+    // 
     fetch(wData.rsvpUrl, {
       method: 'POST',
       headers: {
@@ -387,19 +387,19 @@ document.addEventListener('DOMContentLoaded', () => {
       wishes_message: message,
     };
 
-    // Gáº¯n guest_id vÃ  type náº¿u cÃ³
+    // 
     if (wData.guestId) {
       payload.guest_id = wData.guestId;
     }
     payload.type = wData.type || 1;
 
-    // Gá»­i request Ä‘áº¿n Laravel API
+    // 
     fetch(wData.wishesUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-CSRF-TOKEN': wData.csrfToken,
+        'Accept': 'application/json'
+        //'X-CSRF-TOKEN': wData.csrfToken,
       },
       body: JSON.stringify(payload),
     })
