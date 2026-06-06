@@ -70,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
       petalsCanvas.classList.add('active');
 
       startFireworks();
-      
+
       loadWishes();
 
+      
       AOS.init({
         duration: 900,
         easing: 'ease-out-cubic',
@@ -162,50 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }).catch(() => {});
     }
   });
-  // ============================================================
-  // 5C. LOAD LỜI CHÚC TỪ SERVER KHI MỞ TRANG
-  // ============================================================
-  function loadWishes() {
-    if (!wData.wishesUrl) return;
- 
-    fetch(wData.wishesUrl, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' }
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('Lỗi load lời chúc');
-      return res.json();
-    })
-    .then(data => {
-      const wishes = data.wishes || [];
-      const wishesList = document.getElementById('wishes-list');
-      if (!wishesList) return;
- 
-      // Xóa card mẫu hardcode trong HTML
-      wishesList.innerHTML = '';
- 
-      if (wishes.length === 0) {
-        wishesList.innerHTML = '<p style="text-align:center; color: var(--color-text-muted); padding: 20px;">Chưa có lời chúc nào. Hãy là người đầu tiên! 💕</p>';
-        return;
-      }
- 
-      wishes.forEach(w => {
-        const card = document.createElement('div');
-        card.className = 'wish-card';
-        card.innerHTML = `
-          <div class="wish-header">
-            <p class="wish-author">${escapeHTML(w.guest_name)}</p>
-            <p class="wish-date">${escapeHTML(w.created_at)}</p>
-          </div>
-          <p class="wish-text">${escapeHTML(w.wishes_message)}</p>
-        `;
-        wishesList.appendChild(card);
-      });
-    })
-    .catch(err => {
-      console.warn('Không load được lời chúc:', err);
-    });
-  }
+
   // ============================================================
   // 3. Äá»’NG Há»’ Äáº¾M NGÆ¯á»¢C (Countdown Timer)
   // ============================================================
@@ -389,14 +347,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ============================================================
-  // 5B. GUESTBOOK FORM â€” Gá»¬I Lá»œI CHÃšC
+  javascript  // ============================================================
+  // 5B. GUESTBOOK FORM – GỬI LỜI CHÚC
   // ============================================================
   const guestbookForm = document.getElementById('guestbook-form');
   if (guestbookForm) {
     guestbookForm.addEventListener('submit', handleGuestbook);
   }
-  //Hàm lời chúc  
+
   function handleGuestbook(e) {
     e.preventDefault();
 
@@ -405,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = nameInput.value.trim();
     const message = messageInput.value.trim();
 
-    // Validation
     if (!name) {
       showToast('Vui lòng nhập họ và tên');
       nameInput.focus();
@@ -421,46 +378,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnText = btnSubmit.querySelector('.btn-text');
     const btnLoader = btnSubmit.querySelector('.btn-loader');
 
-    // Show loading
     btnSubmit.disabled = true;
     btnText.classList.add('hidden');
     btnLoader.classList.remove('hidden');
 
-    // Build payload
     const payload = {
       guest_name: name,
       wishes_message: message,
     };
 
-    // 
-    if (wData.guestId) {
-      payload.guest_id = wData.guestId;
-    }
-    payload.type = wData.type || 1;
-
-    // 
     fetch(wData.wishesUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-        //'X-CSRF-TOKEN': wData.csrfToken,
+        'Accept': 'application/json',
       },
       body: JSON.stringify(payload),
     })
     .then(response => {
-      if (!response.ok) {
-        return response.json().then(err => { throw err; });
-      }
+      if (!response.ok) return response.json().then(err => { throw err; });
       return response.json();
     })
     .then(data => {
       btnSubmit.disabled = false;
       btnText.classList.remove('hidden');
       btnLoader.classList.add('hidden');
-
       addWishToWall(name, message);
-
       showToast('Cảm ơn lời chúc của bạn! 💕');
       guestbookForm.reset();
     })
@@ -468,7 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSubmit.disabled = false;
       btnText.classList.remove('hidden');
       btnLoader.classList.add('hidden');
-
       if (err && err.errors) {
         const firstError = Object.values(err.errors)[0];
         showToast(firstError[0] || 'Có lỗi xảy ra, vui lòng thử lại');
@@ -477,33 +419,75 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  //============================================================
+
+  // ============================================================
+  // 5C. LOAD LỜI CHÚC TỪ SERVER
+  // ============================================================
+  function loadWishes() {
+    if (!wData.wishesUrl) return;
+
+    fetch(wData.wishesUrl, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Lỗi load lời chúc');
+      return res.json();
+    })
+    .then(data => {
+      const wishes = data.wishes || [];
+      const wishesList = document.getElementById('wishes-list');
+      if (!wishesList) return;
+
+      wishesList.innerHTML = '';
+
+      if (wishes.length === 0) {
+        wishesList.innerHTML = '<p style="text-align:center; color: var(--color-text-muted); padding: 20px;">Chưa có lời chúc nào. Hãy là người đầu tiên! 💕</p>';
+        return;
+      }
+
+      wishes.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'wish-card';
+        card.innerHTML = `
+          <div class="wish-header">
+            <p class="wish-author">${escapeHTML(w.guest_name)}</p>
+            <p class="wish-date">${escapeHTML(w.created_at)}</p>
+          </div>
+          <p class="wish-text">${escapeHTML(w.wishes_message)}</p>
+        `;
+        wishesList.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.warn('Không load được lời chúc:', err);
+    });
+  }
+
+  // ============================================================
+  // 5D. THÊM LỜI CHÚC MỚI LÊN WALL (KHÔNG CẦN RELOAD)
+  // ============================================================
   function addWishToWall(name, wish) {
     const wishesList = document.getElementById('wishes-list');
+
+    // Xóa thông báo "chưa có lời chúc" nếu có
+    const emptyMsg = wishesList.querySelector('p');
+    if (emptyMsg) emptyMsg.remove();
+
+    const now = new Date();
+    const formattedDate = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
     const card = document.createElement('div');
     card.className = 'wish-card';
-    const safeWish = escapeHTML(wish);
-    const safeName = escapeHTML(name);
-    
-    // Láº¥y ngÃ y giá» hiá»‡n táº¡i
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
-    
     card.innerHTML = `
       <div class="wish-header">
-        <p class="wish-author">${safeName}</p>
+        <p class="wish-author">${escapeHTML(name)}</p>
         <p class="wish-date">${formattedDate}</p>
       </div>
-      <p class="wish-text">${safeWish}</p>
+      <p class="wish-text">${escapeHTML(wish)}</p>
     `;
     wishesList.prepend(card);
   }
-
   // ============================================================
   // 6. RED ENVELOPE INTERACTION
   // ============================================================
