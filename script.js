@@ -80,9 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         once: true,
         offset: 80,
       });
-
-      // Báº¯t Ä‘áº§u auto-scroll sau khi thiá»‡p hiá»‡n ra
-      setTimeout(() => startAutoScroll(), 1800);
+      // Bắt đầu auto-scroll sau khi thiệp hiện ra
+      setTimeout(() => startAutoScroll(), 2000);
     }, 1000);
   });
 
