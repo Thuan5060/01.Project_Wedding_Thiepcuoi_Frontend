@@ -70,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
       petalsCanvas.classList.add('active');
 
       startFireworks();
+      
+      loadWishes();
 
       AOS.init({
         duration: 900,
@@ -160,7 +162,50 @@ document.addEventListener('DOMContentLoaded', () => {
       }).catch(() => {});
     }
   });
-
+  // ============================================================
+  // 5C. LOAD LỜI CHÚC TỪ SERVER KHI MỞ TRANG
+  // ============================================================
+  function loadWishes() {
+    if (!wData.wishesUrl) return;
+ 
+    fetch(wData.wishesUrl, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Lỗi load lời chúc');
+      return res.json();
+    })
+    .then(data => {
+      const wishes = data.wishes || [];
+      const wishesList = document.getElementById('wishes-list');
+      if (!wishesList) return;
+ 
+      // Xóa card mẫu hardcode trong HTML
+      wishesList.innerHTML = '';
+ 
+      if (wishes.length === 0) {
+        wishesList.innerHTML = '<p style="text-align:center; color: var(--color-text-muted); padding: 20px;">Chưa có lời chúc nào. Hãy là người đầu tiên! 💕</p>';
+        return;
+      }
+ 
+      wishes.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'wish-card';
+        card.innerHTML = `
+          <div class="wish-header">
+            <p class="wish-author">${escapeHTML(w.guest_name)}</p>
+            <p class="wish-date">${escapeHTML(w.created_at)}</p>
+          </div>
+          <p class="wish-text">${escapeHTML(w.wishes_message)}</p>
+        `;
+        wishesList.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.warn('Không load được lời chúc:', err);
+    });
+  }
   // ============================================================
   // 3. Äá»’NG Há»’ Äáº¾M NGÆ¯á»¢C (Countdown Timer)
   // ============================================================
@@ -351,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (guestbookForm) {
     guestbookForm.addEventListener('submit', handleGuestbook);
   }
-
+  //Hàm lời chúc  
   function handleGuestbook(e) {
     e.preventDefault();
 
@@ -432,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
+  //============================================================
   function addWishToWall(name, wish) {
     const wishesList = document.getElementById('wishes-list');
     const card = document.createElement('div');
