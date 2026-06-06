@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  javascript  // ============================================================
+// ============================================================
   // 5B. GUESTBOOK FORM – GỬI LỜI CHÚC
   // ============================================================
   const guestbookForm = document.getElementById('guestbook-form');
